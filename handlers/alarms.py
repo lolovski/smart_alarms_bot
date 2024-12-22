@@ -9,11 +9,13 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.payload import decode_payload
 from dotenv import load_dotenv
+from pytz import timezone
 
 from database.requests.alarms import set_alarms
 from database.requests.user import get_user_by_tg_id, set_user
 from keyboard.inline.start import channel_url_keyboard, adopt_rules
 from keyboard.reply.start import start_keyboard
+moscow_tz = timezone('Europe/Moscow')
 
 load_dotenv()
 router = Router(name=__name__)
@@ -37,7 +39,7 @@ async def set_date_handler(message: Message, bot: Bot, tg_id: str, state: FSMCon
     date_str = message.text
     try:
         date = datetime.datetime.strptime(date_str, '%d.%m.%y')
-        if date + datetime.timedelta(days=1) < datetime.datetime.now():
+        if date + datetime.timedelta(days=1) < datetime.datetime.now(moscow_tz):
             await message.answer('Выбранная дата уже прошла. Пожалуйста, введите новую дату.')
             return
         await state.update_data(date=date_str)
@@ -55,7 +57,7 @@ async def set_time_handler(message: Message, bot: Bot, tg_id: str, state: FSMCon
         data = await state.get_data()
         date_time_str = data.get('date') + ' ' + time_str
         date_time = datetime.datetime.strptime(date_time_str, '%d.%m.%y %H:%M')
-        if date_time > datetime.datetime.now():
+        if date_time > datetime.datetime.now(moscow_tz):
             await set_alarms(user_id=tg_id, date=date_time)
             await message.answer('Будильник успешно установлен!\n'
                                  f'Дата: {date_time.date().strftime("%d.%m.%y")}\n'

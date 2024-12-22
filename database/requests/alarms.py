@@ -1,4 +1,5 @@
 import datetime
+from pytz import timezone
 
 from database.models import async_session, User, Alarms
 from sqlalchemy import select
@@ -11,6 +12,7 @@ async def set_alarms(user_id, date):
 
 
 async def get_actually_alarms(mac):
+    moscow_tz = timezone('Europe/Moscow')
     async with async_session() as session:
         user = await session.scalar(
             select(User)
@@ -20,7 +22,7 @@ async def get_actually_alarms(mac):
             select(Alarms)
             .where(
                 Alarms.user_id == user.tg_id,
-                Alarms.date > datetime.datetime.now()
+                Alarms.date > datetime.datetime.now(moscow_tz)
             )
             .order_by(Alarms.date.asc())
         )
