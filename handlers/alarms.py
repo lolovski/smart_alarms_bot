@@ -39,6 +39,7 @@ async def set_date_handler(message: Message, bot: Bot, tg_id: str, state: FSMCon
     date_str = message.text
     try:
         date = datetime.datetime.strptime(date_str, '%d.%m.%y')
+        date = date.replace(tzinfo=moscow_tz)
         if date + datetime.timedelta(days=1) < datetime.datetime.now(moscow_tz):
             await message.answer('Выбранная дата уже прошла. Пожалуйста, введите новую дату.')
             return
@@ -57,6 +58,7 @@ async def set_time_handler(message: Message, bot: Bot, tg_id: str, state: FSMCon
         data = await state.get_data()
         date_time_str = data.get('date') + ' ' + time_str
         date_time = datetime.datetime.strptime(date_time_str, '%d.%m.%y %H:%M')
+        date_time = date_time.replace(tzinfo=moscow_tz)
         if date_time > datetime.datetime.now(moscow_tz):
             await set_alarms(user_id=tg_id, date=date_time)
             await message.answer('Будильник успешно установлен!\n'
