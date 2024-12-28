@@ -17,7 +17,7 @@ router = APIRouter()
 async def get_classes(
         mac: str = Query(...),
 ):
-    alarms = await get_actually_alarms(mac)
+    alarms = await get_actually_alarms(mac=mac)
     if alarms is not None:
         alarms.date = alarms.date.strftime('%d.%m.%y %H:%M:%S')
     return alarms

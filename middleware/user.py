@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Callable, Awaitable, Any, Dict
 
 from aiogram import BaseMiddleware
@@ -23,8 +24,10 @@ class UserMiddleware(BaseMiddleware):
         current_event = event.message or event.callback_query
         if isinstance(current_event, Message):
             tg_id = current_event.from_user.id
-            data['tg_id'] = tg_id
+            username = re.sub(r'[^a-zA-Z0-9а-яА-ЯёЁ\s]', '', current_event.from_user.full_name)
         else:
             tg_id = current_event.message.from_user.id
-            data['tg_id'] = tg_id
+            username = re.sub(r'[^a-zA-Z0-9а-яА-ЯёЁ\s]', '', current_event.message.from_user.full_name)
+        data['username'] = username
+        data['tg_id'] = tg_id
         return await handler(event, data)

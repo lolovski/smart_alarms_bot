@@ -10,6 +10,10 @@ from fastapi import FastAPI
 
 from middleware.user import UserMiddleware
 from api.alarms import router as alarms_router
+
+from handlers.basic import router as basic_router
+from handlers.auth import router as auth_router
+from handlers.alarms import router as alarm_router
 app = FastAPI()
 app.include_router(alarms_router)
 
@@ -24,13 +28,10 @@ dp.update.middleware.register(UserMiddleware(bot=bot))
 
 async def main() -> None:
     # wait async_main()
-    # await add_visits()
-    from handlers.basic import router as basic_router
     dp.include_router(basic_router)
-    from handlers.start import router as start_router
-    dp.include_router(start_router)
-    from handlers.alarms import router as alarm_router
+    dp.include_router(auth_router)
     dp.include_router(alarm_router)
+
     await dp.start_polling(bot)
 
 
