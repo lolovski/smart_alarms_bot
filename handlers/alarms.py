@@ -1,3 +1,4 @@
+import calendar
 import os
 import re
 import datetime
@@ -61,9 +62,12 @@ async def date_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMCont
         case 'month':
             match state_data[3]:
                 case 'plus':
-                    date += datetime.timedelta(days=28)
+                    days = calendar.monthrange(date.year, date.month)[-1]
+                    date += datetime.timedelta(days=days)
                 case 'minus':
-                    date -= datetime.timedelta(days=28)
+                    last_date = date - datetime.timedelta(days=(date.day + 1))
+                    days = calendar.monthrange(last_date.year, last_date.month)[-1]
+                    date -= datetime.timedelta(days=days)
 
     if state_data[3] == 'confirm':
         date = date.replace(tzinfo=moscow_tz)
