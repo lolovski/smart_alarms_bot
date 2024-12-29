@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from pytz import timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.requests.alarms import get_actually_alarms
@@ -21,3 +22,12 @@ async def get_classes(
     if alarms is not None:
         alarms.date = alarms.date.strftime('%d.%m.%y %H:%M:%S')
     return alarms
+
+
+@router.get(
+    '/now'
+)
+async def get_now():
+    moscow_tz = timezone('Europe/Moscow')
+    now = datetime.now(moscow_tz)
+    return now.strftime('%d.%m.%y %H:%M:%S')

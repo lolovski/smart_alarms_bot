@@ -14,7 +14,7 @@ from callbacks.auth import AuthCallback
 from database.requests.user import get_user_by_tg_id, set_user
 from keyboard.inline.auth import channel_url_keyboard, adopt_rules, auth_keyboard
 from keyboard.reply.auth import start_reply_keyboard
-from locale.auth import start_text, welcome_text, send_mac_address
+from phrases.auth import start_text, welcome_text, send_mac_address
 
 load_dotenv()
 router = Router(name=__name__)
