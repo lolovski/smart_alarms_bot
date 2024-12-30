@@ -28,18 +28,17 @@ admin_id = os.getenv("ADMIN_ID")
 
 
 @router.message(F.text == 'Мои будильники')
-async def show_alarms_handler(message: Message, bot: Bot, tg_id: str, state: FSMContext):
+async def show_alarms_handler(message: Message, bot: Bot, state: FSMContext):
     await message.answer('Выберите функцию:', reply_markup=main_alarms_keyboard())
 
 
 @router.callback_query(AlarmsCallback.filter(F.action == 'main_alarms'))
-async def show_alarms_call_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
-    await call.message.edit_text('Выберите функцию:', reply_markup=main_alarms_keyboard())
+async def show_alarms_call_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     await call.message.edit_text('Выберите функцию:', reply_markup=main_alarms_keyboard())
 
 
 @router.callback_query(AlarmsCallback.filter(F.action == 'set_alarms'))
-async def set_alarms_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+async def set_alarms_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     now = datetime.datetime.now(moscow_tz)
     await call.message.edit_text(f'Выберите дату\n {now.strftime('%d.%m.%Y')}', reply_markup=create_date_picker())
 
@@ -48,7 +47,7 @@ async def set_alarms_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: F
 
 
 @router.callback_query(DatetimeCallback.filter(F.date_or_time == 'date'))
-async def date_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+async def date_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     data = await state.get_data()
     state_data = call.data.split(':')
     date = data['date']
@@ -87,7 +86,9 @@ async def date_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMCont
 
 
 @router.callback_query(DatetimeCallback.filter(F.date_or_time == 'time'))
-async def time_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+async def time_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
+    tg_id = call.from_user.id
+    print(tg_id)
     data = await state.get_data()
     time = data['time']
     state_data = call.data.split(':')
@@ -124,7 +125,7 @@ async def time_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMCont
         if date_time > datetime.datetime.now(moscow_tz):
             duplicate_alarms = await get_duplicate_alarms(tg_id=tg_id, date_time=date_time)
             if duplicate_alarms is None:
-                await set_alarms(user_id=tg_id, date=date_time)
+                await set_alarms(user_tg_id=tg_id, date=date_time)
                 await call.message.edit_text('Будильник успешно установлен!\n'
                                           f'Дата: {date_time.date().strftime("%d.%m.%y")}\n'
                                           f'Время: {date_time.time().strftime("%H:%M")}')
@@ -147,8 +148,9 @@ async def time_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMCont
 
 
 @router.callback_query(AlarmsCallback.filter(F.action == 'view_alarms'))
-async def view_alarms_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
-    alarms = await get_actually_alarms(tg_id=tg_id)
+async def view_alarms_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
+    tg_id = call.from_user.id
+    alarms = await get_actually_alarms(user_tg_id=tg_id)
     if not alarms:
         return await call.message.edit_text(
             'У вас нет установленных будильников.',
@@ -159,15 +161,16 @@ async def view_alarms_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: 
 
 
 @router.callback_query(AlarmsCallback.filter(F.action == 'my_alarms'))
-async def my_alarms_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+async def my_alarms_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
     state_data = call.data.split(':')
     await call.message.edit_text(text='Управление будильником', reply_markup=alarms_control_keyboard(state_data[-1]))
 
 
 @router.callback_query(AlarmsCallback.filter(F.action == 'delete_alarms'))
-async def delete_alarms_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+async def delete_alarms_handler(call: CallbackQuery, bot: Bot, state: FSMContext):
+    tg_id = call.from_user.id
     state_data = call.data.split(':')
     alarm_id = state_data[-1]
     await delete_alarms(alarm_id=alarm_id)
-    alarms = await get_actually_alarms(tg_id=tg_id)
+    alarms = await get_actually_alarms(user_tg_id=tg_id)
     await call.message.edit_text(text='Будильник успешно удален.', reply_markup=my_alarms_keyboard(alarms))

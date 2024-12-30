@@ -37,15 +37,16 @@ async def start_handler(message: Message, bot: Bot, command: CommandObject, tg_i
 
 
 @router.callback_query(AuthCallback.filter(F.action == "start"))
-async def send_mac_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
+async def send_mac_handler(call: CallbackQuery, bot: Bot, state: FSMContext) -> None:
     await call.message.edit_text(send_mac_address)
     await state.set_state(AuthForm.mac)
 
 
 @router.message(AuthForm.mac)
-async def mac_handler(message: Message, bot: Bot, tg_id: str, state: FSMContext, username: str) -> None:
-    mac = message.text
-    await set_user(tg_id=tg_id, mac=mac)
+async def mac_handler(message: Message, bot: Bot, state: FSMContext, username: str) -> None:
+    board_id = message.text
+    tg_id = message.from_user.id
+    await set_user(tg_id=tg_id, board_id=board_id)
     await message.answer(start_text(username),
                          reply_markup=start_reply_keyboard())
     await state.clear()

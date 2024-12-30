@@ -3,9 +3,9 @@ from database.models import async_session, User
 from sqlalchemy import select
 
 
-async def set_user(tg_id, mac):
+async def set_user(tg_id, board_id):
     async with async_session() as session:
-        session.add(User(tg_id=tg_id, mac=mac))
+        session.add(User(tg_id=tg_id, board_id=board_id))
         await session.commit()
 
 

@@ -16,9 +16,9 @@ router = APIRouter()
     response_model=Optional[AlarmsRead],
 )
 async def get_classes(
-        mac: str = Query(...),
+        board_id: str = Query(...),
 ):
-    alarms = await get_actually_alarms(mac=mac)
+    alarms = await get_actually_alarms(board_id=board_id)
     if alarms is not None:
         alarms.date = alarms.date.strftime('%d.%m.%y %H:%M:%S')
     return alarms

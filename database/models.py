@@ -22,11 +22,11 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 class User(Base):
     tg_id: Mapped[str] = mapped_column(String(32))
-    mac: Mapped[str] = mapped_column(String(128), nullable=True)
+    board_id: Mapped[str] = mapped_column(String(128), nullable=True)
 
 
 class Alarms(Base):
-    user_id: Mapped[str] = mapped_column(ForeignKey('user.id'))
+    user_tg_id: Mapped[str] = mapped_column(ForeignKey('user.tg_id'))
     date: Mapped[datetime.datetime] = mapped_column(DateTime)
 
 
