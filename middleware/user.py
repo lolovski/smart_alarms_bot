@@ -22,10 +22,8 @@ class UserMiddleware(BaseMiddleware):
     ) -> Any:
 
         current_event = event.message or event.callback_query
-        if isinstance(current_event, Message):
-            tg_id = current_event.from_user.id
-            username = re.sub(r'[^a-zA-Z0-9а-яА-ЯёЁ\s]', '', current_event.from_user.full_name)
-            data['username'] = username
-            print(tg_id)
-            data['tg_id'] = tg_id
+        tg_id = current_event.from_user.id
+        username = re.sub(r'[^a-zA-Z0-9а-яА-ЯёЁ\s]', '', current_event.from_user.full_name)
+        data['username'] = username
+        data['tg_id'] = tg_id
         return await handler(event, data)

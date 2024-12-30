@@ -15,7 +15,7 @@ router = APIRouter()
     '/get_time',
     response_model=Optional[AlarmsRead],
 )
-async def get_classes(
+async def get_time(
         board_id: str = Query(...),
 ):
     alarms = await get_actually_alarms(board_id=board_id)
