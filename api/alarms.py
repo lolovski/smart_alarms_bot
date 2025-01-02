@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
@@ -9,6 +9,7 @@ from database.requests.alarms import get_actually_alarms
 from schemes.alarms import AlarmsRead
 
 router = APIRouter()
+moscow_tz = timezone('Europe/Moscow')
 
 
 @router.get(
@@ -29,6 +30,5 @@ async def get_time(
     '/now'
 )
 async def get_now():
-    moscow_tz = timezone('Europe/Moscow')
     now = datetime.now(moscow_tz)
     return now.strftime('%d.%m.%y %H:%M:%S')

@@ -8,7 +8,7 @@ select_date_phrase = lambda now: f'<b>Выберите дату\n {now.strftime(
 time_phrase = lambda time: f'<b>{time.strftime("%H:%M")}</b>'
 passed_time_phrase = lambda time: f'<b>Выбранное время уже прошло. Пожалуйста, введите новое время\n {time.strftime("%H:%M")}</b>'
 select_time_phrase = lambda time: f'<b>Выберите время\n {time.strftime("%H:%M")}</b>'
-time_range_phrase = lambda time: f'<b>Между будильниками должен быть диапазон 15 минут. Пожалуйста, введите новое время\n {time.strftime("%H:%M")}'
+time_range_phrase = lambda time: f'<b>Между будильниками должен быть диапазон 15 минут. Пожалуйста, введите новое время\n {time.strftime("%H:%M")}</b>'
 set_alarms_phrase = lambda date_time: (f"<b>Будильник успешно установлен!\n"
                                        f"Дата: {date_time.date().strftime("%d.%m.%y")}\n"
                                        f"Время: {date_time.time().strftime("%H:%M")}</b>")
