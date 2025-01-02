@@ -23,7 +23,7 @@ async def get_actually_alarms(board_id=None, user_tg_id=None):
                 select(Alarms)
                 .where(
                     Alarms.user_tg_id == str(user_tg_id),
-                    Alarms.date.replace(tzinfo=moscow_tz) > datetime.datetime.now(moscow_tz)
+                    Alarms.date > datetime.datetime.now(moscow_tz)
                 )
                 .order_by(Alarms.date.asc())
             )
