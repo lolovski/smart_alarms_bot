@@ -21,7 +21,8 @@ async def get_time(
     alarms = await get_actually_alarms(board_id=board_id)
     if alarms is not None:
         alarms.date = alarms.date.strftime('%d.%m.%y %H:%M:%S')
-    return alarms
+        return alarms
+    return {'date': None}
 
 
 @router.get(
