@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class AlarmsRead(BaseModel):
-    date: Union[str, datetime] = Field(...)
+    date: Union[str, datetime, None] = Field(...)
 
     class Config:
         orm_mode = True
