@@ -1,5 +1,6 @@
 main_alarms_phrase = '<b>Выберите функцию</b>'
-control_alarms_phrase = '<b>Управление будильником</b>'
+control_alarms_phrase = '<b>Управление будильниками</b>'
+choice_board_phrase = '<b>Выберите плату</b>'
 
 date_phrase = lambda date: f'<b>{date.strftime('%d.%m.%Y')}</b>'
 passed_date_phrase = lambda date: f'<b>Выбранная дата уже прошла. Пожалуйста, введите новую дату.\n{date.strftime("%d.%m.%Y")}</b>'

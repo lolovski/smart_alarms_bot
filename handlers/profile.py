@@ -12,13 +12,16 @@ from aiogram.utils.payload import decode_payload
 from dotenv import load_dotenv
 from pytz import timezone
 
-from FSM.alarms import AlarmsState
+from FSM.alarms import AlarmsForm
 from callbacks.alarms import DatetimeCallback, AlarmsCallback
+from callbacks.board import BoardCallback
+from callbacks.menu import MenuCallback
 from database.requests.alarms import set_alarms, get_actually_alarms, delete_alarms, get_duplicate_alarms
 from database.requests.user import get_user_by_tg_id, set_user
 from keyboard.inline.alarms import create_date_picker, create_time_picker, main_alarms_keyboard, my_alarms_keyboard, \
     alarms_control_keyboard
-from keyboard.inline.auth import channel_url_keyboard, adopt_rules
+from keyboard.inline.profile import show_board_keyboard
+
 from keyboard.reply.auth import start_reply_keyboard
 from phrases.profile import *
 
@@ -32,4 +35,11 @@ async def show_profile_handler(message: Message, bot: Bot, tg_id: str, state: FS
     user = await get_user_by_tg_id(tg_id)
     if user is not None:
         await message.answer_sticker(profile_sticker)
-        await message.answer(show_profile_phrase(user))
+        await message.answer(show_profile_phrase(user), reply_markup=show_board_keyboard(user.id))
+
+
+@router.callback_query(MenuCallback.filter(F.action == 'profile'))
+async def show_profile_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+    user = await get_user_by_tg_id(tg_id)
+    if user is not None:
+        await call.message.edit_text(show_profile_phrase(user), reply_markup=show_board_keyboard(user.id))

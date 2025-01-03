@@ -2,6 +2,16 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callbacks.alarms import DatetimeCallback, AlarmsCallback
+from callbacks.board import BoardCallback
+from callbacks.menu import MenuCallback
+
+
+def show_board_alarms_keyboard(boards) -> InlineKeyboardMarkup:
+    keyboard = InlineKeyboardBuilder()
+    for board in boards:
+        keyboard.button(text=str(board.id), callback_data=AlarmsCallback(action='main_alarms_board', board_id=board.id).pack())
+
+    return keyboard.adjust(1).as_markup()
 
 
 def main_alarms_keyboard() -> InlineKeyboardMarkup:
@@ -69,3 +79,9 @@ def alarms_control_keyboard(alarm_id) -> InlineKeyboardMarkup:
 #    keyboard.button(text='Изменить', callback_data=AlarmsCallback(action='edit_alarms', alarm_id=alarm_id).pack())
     keyboard.button(text='Назад', callback_data=AlarmsCallback(action='view_alarms', alarm_id=alarm_id).pack())
     return keyboard.adjust(1).as_markup()
+
+
+def go_to_profile_keyboard():
+    keyboard = InlineKeyboardBuilder()
+    keyboard.button(text='Перейти в профиль', callback_data=MenuCallback(action='profile').pack())
+    return keyboard.as_markup()

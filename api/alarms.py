@@ -20,9 +20,10 @@ async def get_time(
         board_id: str = Query(...),
 ):
     alarms = await get_actually_alarms(board_id=board_id)
-    if alarms is not None:
-        alarms.date = alarms.date.strftime('%d.%m.%y %H:%M:%S')
-        return alarms
+    if alarms:
+        alarm = alarms[0]
+        alarm.date = alarm.date.strftime('%d.%m.%y %H:%M:%S')
+        return alarm
     return {'date': None}
 
 
@@ -30,5 +31,5 @@ async def get_time(
     '/now'
 )
 async def get_now():
-    now = datetime.now(moscow_tz)
+    now = datetime.datetime.now(moscow_tz)
     return now.strftime('%d.%m.%y %H:%M:%S')

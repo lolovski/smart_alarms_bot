@@ -15,6 +15,7 @@ from handlers.basic import router as basic_router
 from handlers.auth import router as auth_router
 from handlers.alarms import router as alarm_router
 from handlers.profile import router as profile_router
+from handlers.board import router as board_router
 app = FastAPI()
 app.include_router(alarms_router)
 
@@ -33,6 +34,7 @@ async def main() -> None:
     dp.include_router(auth_router)
     dp.include_router(alarm_router)
     dp.include_router(profile_router)
+    dp.include_router(board_router)
 
     await dp.start_polling(bot)
 

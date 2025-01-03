@@ -1,4 +1,5 @@
 import datetime
+from typing import List
 
 from sqlalchemy import String, ForeignKey, Integer, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, declared_attr
@@ -22,11 +23,33 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 class User(Base):
     tg_id: Mapped[str] = mapped_column(String(32))
-    board_id: Mapped[str] = mapped_column(String(128), nullable=True)
+    boards: Mapped[List['Board']] = relationship(
+        back_populates='users',
+        secondary='boarduser',
+        lazy='selectin'
+    )
+
+
+class Board(Base):
+    users: Mapped[List['User']] = relationship(
+        back_populates='boards',
+        secondary='boarduser',
+        lazy='selectin'
+    )
+
+
+class BoardUser(Base):
+    id = None
+    user_id: Mapped[int] = mapped_column(ForeignKey(
+        'user.id', ondelete='CASCADE'
+    ), primary_key=True)
+    board_id: Mapped[int] = mapped_column(ForeignKey(
+        'board.id', ondelete='CASCADE'
+    ), primary_key=True)
 
 
 class Alarms(Base):
-    user_tg_id: Mapped[str] = mapped_column(ForeignKey('user.tg_id'))
+    board_id: Mapped[int] = mapped_column(ForeignKey('board.id'))
     date: Mapped[datetime.datetime] = mapped_column(DateTime)
 
 

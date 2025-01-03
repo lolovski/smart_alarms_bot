@@ -1,7 +1,6 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class AlarmsForm(StatesGroup):
+class BoardForm(StatesGroup):
     board_id = State()
-    date = State()
-    time = State()
+    user_id = State()
