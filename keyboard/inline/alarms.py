@@ -19,6 +19,7 @@ def main_alarms_keyboard() -> InlineKeyboardMarkup:
     keyboard.button(text='Добавить будильник', callback_data=AlarmsCallback(action='set_alarms', alarm_id=None).pack())
 #    keyboard.button(text='Настройки', callback_data=AlarmsCallback(action='settings', alarm_id=None).pack())
     keyboard.button(text='Просмотреть будильники', callback_data=AlarmsCallback(action='view_alarms', alarm_id=None).pack())
+    keyboard.button(text='Назад', callback_data=MenuCallback(action='alarms').pack())
     return keyboard.adjust(1).as_markup()
 
 

@@ -9,7 +9,7 @@ from callbacks.menu import MenuCallback
 def add_board_keyboard():
     buttons = [
         [InlineKeyboardButton(text='Добавить плату', callback_data=BoardCallback(action='add_board').pack())],
-        [InlineKeyboardButton(text='Назад', callback_data=MenuCallback(action='profile').pack())],
+        [InlineKeyboardButton(text='Профиль', callback_data=MenuCallback(action='profile').pack())],
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

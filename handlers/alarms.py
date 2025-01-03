@@ -14,6 +14,7 @@ from pytz import timezone
 
 from FSM.alarms import AlarmsForm
 from callbacks.alarms import DatetimeCallback, AlarmsCallback
+from callbacks.menu import MenuCallback
 from database.requests.alarms import set_alarms, get_actually_alarms, delete_alarms, get_duplicate_alarms
 from database.requests.board import get_user_boards
 from database.requests.user import get_user_by_tg_id, set_user
@@ -42,6 +43,18 @@ async def show_alarms_handler(message: Message, bot: Bot, tg_id: str, state: FSM
         await state.set_state(AlarmsForm.board_id)
     else:
         await message.answer(no_boards, reply_markup=go_to_profile_keyboard())
+
+
+@router.callback_query(MenuCallback.filter(F.action == 'alarms'))
+async def show_alarms_call_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
+    user = await get_user_by_tg_id(tg_id)
+    boards = await get_user_boards(user.id)
+    if boards:
+        await call.message.edit_text(choice_board_phrase, reply_markup=show_board_alarms_keyboard(boards))
+        await state.set_state(AlarmsForm.board_id)
+    else:
+        await call.message.edit_text(no_boards, reply_markup=go_to_profile_keyboard())
+
 
 @router.callback_query(AlarmsCallback.filter(F.action == 'main_alarms_board'))
 async def main_alarms_board_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext):
