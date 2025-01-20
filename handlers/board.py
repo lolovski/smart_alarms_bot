@@ -16,9 +16,11 @@ from FSM.board import BoardForm
 from callbacks.auth import AuthCallback
 from callbacks.board import BoardCallback
 from database.requests.board import set_board
+from database.requests.error import get_errors, get_error, delete_error
 from database.requests.user import get_user_by_tg_id, set_user
 from keyboard.reply.auth import start_reply_keyboard
-from keyboard.inline.board import add_board_keyboard, list_board_keyboard, view_board_keyboard
+from keyboard.inline.board import add_board_keyboard, list_board_keyboard, view_board_keyboard, \
+    list_board_errors_keyboard, show_error_keyboard
 from phrases.auth import *
 from phrases.board import *
 
@@ -49,7 +51,8 @@ async def board_id_handler(message: Message, bot: Bot, tg_id: str, state: FSMCon
 @router.callback_query(BoardCallback.filter(F.action == "show_boards"))
 async def show_boards_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
     callback_data = call.data.split(':')
-    user_id = int(callback_data[-1])
+
+    user_id = int(callback_data[3])
 
     boards = await get_user_boards(user_id=user_id)
     if boards:
@@ -64,14 +67,52 @@ async def show_boards_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: 
 @router.callback_query(BoardCallback.filter(F.action == 'view_board'))
 async def view_board_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
     callback_data = call.data.split(":")
-    board_id, user_id = callback_data[2:]
+    board_id, user_id = callback_data[2:-1]
     await call.message.edit_text(view_board(board_id), reply_markup=view_board_keyboard(board_id=board_id, user_id=user_id))
+
+
+@router.callback_query(BoardCallback.filter(F.action == 'show_board_errors'))
+async def show_board_errors_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
+    callback_data = call.data.split(":")
+    board_id, user_id = callback_data[2:-1]
+    errors = await get_errors(board_id)
+    if errors:
+        return await call.message.edit_text(
+            error_journal,
+            reply_markup=list_board_errors_keyboard(board_id=board_id, user_id=user_id, errors=errors)
+        )
+
+    await call.message.edit_text(no_error, reply_markup=view_board_keyboard(board_id=board_id, user_id=user_id))
+
+
+@router.callback_query(BoardCallback.filter(F.action == 'view_error'))
+async def show_error_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
+    callback_data = call.data.split(":")
+    board_id, user_id, error_id = callback_data[2:]
+    error = await get_error(error_id)
+    await call.message.edit_text(
+        show_error(error),
+        reply_markup=show_error_keyboard(board_id=board_id, user_id=user_id, error_id=error_id)
+    )
+
+@router.callback_query(BoardCallback.filter(F.action == 'delete_error'))
+async def delete_error_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
+    callback_data = call.data.split(":")
+    board_id, user_id, error_id = callback_data[2:]
+    await delete_error(error_id)
+    errors = await get_errors(board_id)
+    if errors:
+        return await call.message.edit_text(
+            error_journal,
+            reply_markup=list_board_errors_keyboard(board_id=board_id, user_id=user_id, errors=errors)
+        )
+    await call.message.edit_text(no_error, reply_markup=view_board_keyboard(board_id=board_id, user_id=user_id))
 
 
 @router.callback_query(BoardCallback.filter(F.action == 'delete_board'))
 async def delete_board_handler(call: CallbackQuery, bot: Bot, tg_id: str, state: FSMContext) -> None:
     callback_data = call.data.split(":")
-    board_id, user_id = map(int, callback_data[2:])
+    board_id, user_id = map(int, callback_data[2:-1])
     await delete_user_board(user_id=user_id, board_id=board_id)
     boards = await get_user_boards(user_id=user_id)
     if boards:

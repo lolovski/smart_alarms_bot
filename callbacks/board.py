@@ -7,3 +7,4 @@ class BoardCallback(CallbackData, prefix='board'):
     action: str
     board_id: Optional[int] = None
     user_id: Optional[int] = None
+    error_id: Optional[int]= None

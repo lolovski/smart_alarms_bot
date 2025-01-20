@@ -12,6 +12,8 @@ router = APIRouter()
 moscow_tz = timezone('Europe/Moscow')
 
 
+
+
 @router.get(
     '/get_time',
     response_model=Optional[AlarmsRead],
@@ -33,3 +35,4 @@ async def get_time(
 async def get_now():
     now = datetime.datetime.now(moscow_tz)
     return now.strftime('%d.%m.%y %H:%M:%S')
+

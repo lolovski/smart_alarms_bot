@@ -16,8 +16,10 @@ from handlers.auth import router as auth_router
 from handlers.alarms import router as alarm_router
 from handlers.profile import router as profile_router
 from handlers.board import router as board_router
+from api.error import router as error_router
 app = FastAPI()
 app.include_router(alarms_router)
+app.include_router(error_router)
 
 dp = Dispatcher()
 
