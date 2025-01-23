@@ -23,10 +23,11 @@ async def get_time(
 ):
     alarms = await get_actually_alarms(board_id=board_id)
     if alarms:
-        alarm = alarms[0]
-        alarm.date = alarm.date.strftime('%d.%m.%y %H:%M:%S')
-        return alarm
-    return {'date': None}
+        date = alarms[0].date.replace(tzinfo=moscow_tz)
+        now = datetime.datetime.now(moscow_tz)
+        time_difference = (date - now).total_seconds()
+        return {'date': int(time_difference)}
+    return {'date': -1}
 
 
 @router.get(
