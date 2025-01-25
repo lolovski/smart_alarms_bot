@@ -24,7 +24,7 @@ async def get_time(
     alarms = await get_actually_alarms(board_id=board_id)
     if alarms:
         date = alarms[0].date.replace(tzinfo=moscow_tz)
-        now = datetime.datetime.now(moscow_tz)
+        now = datetime.datetime.now().replace(tzinfo=moscow_tz)
         time_difference = (date - now).total_seconds()
         return {'date': int(time_difference)}
     return {'date': -1}
