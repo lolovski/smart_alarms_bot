@@ -16,7 +16,7 @@ moscow_tz = timezone('Europe/Moscow')
 
 @router.get(
     '/get_time',
-    response_model=Optional[AlarmsRead],
+    #response_model=Optional[AlarmsRead],
 )
 async def get_time(
         board_id: str = Query(...),
@@ -26,7 +26,11 @@ async def get_time(
         date = alarms[0].date.replace(tzinfo=moscow_tz)
         now = datetime.datetime.now().replace(tzinfo=moscow_tz)
         time_difference = (date - now).total_seconds()
-        return {'date': int(time_difference)}
+        return {
+            'date': int(time_difference),
+            'now': now,
+            'date_alarms': date
+                }
     return {'date': -1}
 
 
