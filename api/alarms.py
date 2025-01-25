@@ -23,16 +23,20 @@ async def get_time(
 ):
     alarms = await get_actually_alarms(board_id=board_id)
     if alarms:
-        date = alarms[0].date.replace(tzinfo=moscow_tz)
-        now = datetime.datetime.now().replace(tzinfo=moscow_tz)
+        # Предполагаем, что date из базы данных уже в московском времени, но без информации о часовом поясе
+        date = alarms[0].date.replace(tzinfo=None)
+        date = moscow_tz.localize(date)  # Добавляем информацию о московском часовом поясе
+
+        now = datetime.datetime.now(moscow_tz)  # Получаем текущее время в московском часовом поясе
+
+        print(date, now)
         time_difference = (date - now).total_seconds()
         return {
             'date': int(time_difference),
             'now': now,
             'date_alarms': date
-                }
+        }
     return {'date': -1}
-
 
 @router.get(
     '/now'
