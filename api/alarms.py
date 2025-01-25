@@ -29,7 +29,6 @@ async def get_time(
 
         now = datetime.datetime.now(moscow_tz)  # Получаем текущее время в московском часовом поясе
 
-        print(date, now)
         time_difference = (date - now).total_seconds()
         return {
             'date': int(time_difference)
