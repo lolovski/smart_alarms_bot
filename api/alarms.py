@@ -32,9 +32,7 @@ async def get_time(
         print(date, now)
         time_difference = (date - now).total_seconds()
         return {
-            'date': int(time_difference),
-            'now': now,
-            'date_alarms': date
+            'date': int(time_difference)
         }
     return {'date': -1}
 
